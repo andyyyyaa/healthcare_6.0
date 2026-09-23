@@ -1,0 +1,48 @@
+{% from "ui.html" import t, icon, nav %}
+<!DOCTYPE html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#143b36">
+<title data-title-zh="{% block title_zh %}医智评估{% endblock %}" data-title-en="{% block title_en %}ClinRisk{% endblock %}">医智评估</title>
+<script>try{document.documentElement.dataset.lang=localStorage.getItem('lang')==='en'?'en':'zh';}catch(e){}</script>
+<link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-icons.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css', v='20260922-2') }}">
+{% block extra_css %}{% endblock %}
+</head>
+<body data-page="{{ request.endpoint }}">
+<a class="skip-link" href="#main-content">{{ t('跳转到主要内容','Skip to content') }}</a>
+<aside class="sidebar" id="sidebar" aria-label="主导航" data-i18n-aria-label-zh="主导航" data-i18n-aria-label-en="Main navigation">
+  <a class="sidebar-brand" href="{{ url_for('home') }}"><span class="brand-mark">{{ icon('plus-lg') }}</span><span><strong>{{ t('医智评估','ClinRisk') }}</strong><small>CLINRISK · HEALTHCARE</small></span></a>
+  <div class="sidebar-section-label">{{ t('工作空间','WORKSPACE') }}</div>
+  <nav class="sidebar-nav">
+    {{ nav('home','工作台','Overview','grid-1x2',['home']) }}
+    <div class="sidebar-section-label">{{ t('健康评估','ASSESSMENTS') }}</div>
+    {{ nav('diagnosis','骨折影像分析','Fracture analysis','bounding-box-circles',['diagnosis','upload']) }}
+    {{ nav('heart_disease_prediction','心脏风险评估','Heart assessment','heart-pulse',['heart_disease_prediction','heart_disease_prediction_result']) }}
+    <div class="sidebar-section-label">{{ t('记录与分析','RECORDS & INSIGHTS') }}</div>
+    {{ nav('search','骨折评估记录','Fracture records','file-earmark-medical',['search']) }}
+    {{ nav('search_heart','心脏评估记录','Heart records','clipboard2-pulse',['search_heart']) }}
+    {{ nav('charts','数据统计','Statistics','bar-chart-line',['charts']) }}
+  </nav>
+  <div class="sidebar-bottom"><span class="version-label">HEALTHCARE <b>6.0</b></span><p>{{ t('让健康信息更清晰','A clearer view of your health') }}</p><div class="local-status"><span></span>{{ t('本地工作空间','Local workspace') }}</div></div>
+</aside>
+<button class="sidebar-backdrop" id="sidebar-backdrop" aria-label="关闭导航" data-i18n-aria-label-zh="关闭导航" data-i18n-aria-label-en="Close navigation" tabindex="-1" hidden></button>
+<div class="main-content">
+<header class="top-bar">
+ <div class="topbar-heading"><button class="icon-button menu-toggle" id="menu-toggle" type="button" aria-label="打开导航" data-i18n-aria-label-zh="打开导航" data-i18n-aria-label-en="Open navigation" aria-controls="sidebar" aria-expanded="false">{{ icon('list') }}</button><div><div class="breadcrumb-label">ClinRisk <span>/</span> {{ t('工作空间','Workspace') }}</div><h1><span class="lang-zh">{% block page_title_zh %}健康工作台{% endblock %}</span><span class="lang-en">{% block page_title_en %}Health workspace{% endblock %}</span></h1></div></div>
+ <div class="topbar-actions"><button class="btn language-toggle" type="button" onclick="toggleLang()">{{ icon('translate') }}{{ t('English','中文') }}</button><span class="topbar-divider"></span>{% if session.get('login_name') %}<div class="dropdown"><button class="profile-button dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><span class="avatar">{{ session.get('login_name')[0]|upper }}</span><span class="profile-name">{{ session.get('login_name') }}</span></button><ul class="dropdown-menu dropdown-menu-end"><li><a class="dropdown-item" href="{{ url_for('logout') }}">{{ icon('box-arrow-right') }} {{ t('退出登录','Log out') }}</a></li></ul></div>{% else %}<a class="btn btn-primary btn-sm" href="{{ url_for('login') }}">{{ icon('person') }}{{ t('登录账户','Log in') }}</a>{% endif %}</div>
+</header>
+<main class="content-area" id="main-content" tabindex="-1">
+{% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="alert alert-{{ 'danger' if category in ['error','danger'] else 'info' }} alert-dismissible fade show" role="alert">{{ icon('info-circle') }} {{ message }}<button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="关闭提示" data-i18n-aria-label-zh="关闭提示" data-i18n-aria-label-en="Dismiss message"></button></div>{% endfor %}{% endwith %}
+{% block content %}{% endblock %}
+</main>
+<footer class="workspace-footer"><span>ClinRisk <span class="footer-separator">/</span> {{ t('智能健康评估工作空间','Intelligent health assessment workspace') }}</span><span>Healthcare 6.0</span></footer>
+</div>
+<script src="{{ url_for('static', filename='vendor/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='lang.js', v='2') }}"></script>
+<script src="{{ url_for('static', filename='app-ui.js', v='2') }}"></script>
+{% block extra_js %}{% endblock %}
+</body></html>

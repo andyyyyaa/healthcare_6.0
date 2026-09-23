@@ -1,0 +1,183 @@
+{% extends "base.html" %}{% from "ui.html" import t, icon %}
+{% block title_zh %}心脏风险评估 - 医智评估{% endblock %}{% block title_en %}Heart Risk Assessment - ClinRisk{% endblock %}
+{% block page_title_zh %}心脏风险评估{% endblock %}{% block page_title_en %}Heart risk assessment{% endblock %}
+{% block content %}
+<div class="page-intro"><span class="eyebrow">HEART HEALTH ASSESSMENT</span><h2>{{ t('更有条理地了解心脏健康','Understand your heart health') }}</h2><p>{{ t('根据已有检查信息填写以下指标，完成一次模型辅助风险评估。','Use information from your examinations to complete a model-assisted risk assessment.') }}</p></div>
+<div class="heart-layout"><section class="card heart-form"><div class="card-header"><h3>{{ t('健康指标','Health indicators') }}</h3><p>{{ t('请核对数值和单位，确保输入信息完整。','Check values and units and complete all required information.') }}</p></div><div class="card-body"><form method="post" action="{{ url_for('heart_disease_prediction_result') }}">
+                    <!-- 基本信息部分 (仅当用户未登录时显示) -->
+                    {% if login_status == False %}
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-person-badge me-2"></i><span data-i18n-text-zh="基本信息" data-i18n-text-en="Basic Info">基本信息</span>
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="age" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar-event me-2"></i><span data-i18n-text-zh="年龄" data-i18n-text-en="Age">年龄</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-123 text-muted"></i>
+                                    </span>
+                                    <input type="number" name="age" min="1" max="120" id="age" class="form-control" placeholder="请输入年龄" data-i18n-placeholder-zh="请输入年龄" data-i18n-placeholder-en="Enter age" required>
+                                    <span class="input-group-text bg-light" data-i18n-text-zh="岁" data-i18n-text-en="yrs">岁</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="sex" class="form-label fw-semibold">
+                                    <i class="bi bi-gender-ambiguous me-2"></i><span data-i18n-text-zh="性别" data-i18n-text-en="Gender">性别</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="bi bi-person-badge text-muted"></i>
+                                    </span>
+                                    <select name="sex" id="sex" class="form-select" required>
+                                        <option value="" data-i18n-text-zh="请选择性别" data-i18n-text-en="Select gender">请选择性别</option>
+                                        <option value="female" data-i18n-text-zh="女性" data-i18n-text-en="Female">女性</option>
+                                        <option value="male" data-i18n-text-zh="男性" data-i18n-text-en="Male">男性</option>
+                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- 症状评估部分 -->
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-heart-pulse me-2"></i><span data-i18n-text-zh="症状评估" data-i18n-text-en="Symptoms">症状评估</span>
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="cp" class="form-label fw-semibold">
+                                    <i class="bi bi-exclamation-triangle me-2"></i><span data-i18n-text-zh="胸痛类型" data-i18n-text-en="Chest Pain Type">胸痛类型</span>
+                                </label>
+                                <select name="cp" id="cp" class="form-select">
+                                    <option value="non-anginal" data-i18n-text-zh="非心绞痛" data-i18n-text-en="Non-anginal">非心绞痛</option>
+                                    <option value="typical angina" data-i18n-text-zh="典型心绞痛" data-i18n-text-en="Typical angina">典型心绞痛</option>  
+                                    <option value="atypical angina" data-i18n-text-zh="非典型心绞痛" data-i18n-text-en="Atypical angina">非典型心绞痛</option>
+                                    <option value="asymptomatic" data-i18n-text-zh="无症状" data-i18n-text-en="Asymptomatic">无症状</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="restecg" class="form-label fw-semibold">
+                                    <i class="bi bi-activity me-2"></i><span data-i18n-text-zh="静息心电图结果" data-i18n-text-en="Resting ECG">静息心电图结果</span>
+                                </label>
+                                <select name="restecg" id="restecg" class="form-select">
+                                    <option value="normal" data-i18n-text-zh="正常" data-i18n-text-en="Normal">正常</option>
+                                    <option value="ST-T wave abnormality" data-i18n-text-zh="ST-T波异常" data-i18n-text-en="ST-T wave abnormality">ST-T波异常</option>
+                                    <option value="probable or definite left ventricular hypertrophy" data-i18n-text-zh="可能或明确的左心室肥厚" data-i18n-text-en="Probable/definite LV hypertrophy">可能或明确的左心室肥厚</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="exang" class="form-label fw-semibold">
+                                    <i class="bi bi-lightning-charge me-2"></i><span data-i18n-text-zh="运动诱发心绞痛" data-i18n-text-en="Exercise-induced Angina">运动诱发心绞痛</span>
+                                </label>
+                                <select name="exang" id="exang" class="form-select">
+                                    <option value="Exercise-induced angina False" data-i18n-text-zh="否" data-i18n-text-en="No">否</option>  
+                                    <option value="Exercise-induced angina True" data-i18n-text-zh="是" data-i18n-text-en="Yes">是</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 生理指标部分 -->
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-heart-half me-2"></i><span data-i18n-text-zh="生理指标" data-i18n-text-en="Physiological Indicators">生理指标</span>
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="trestbps" class="form-label fw-semibold">
+                                    <i class="bi bi-speedometer2 me-2"></i><span data-i18n-text-zh="静息血压" data-i18n-text-en="Resting Blood Pressure">静息血压</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" name="trestbps" min="1" max="350" id="trestbps" class="form-control" placeholder="120" required>
+                                    <span class="input-group-text bg-light">mmHg</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="chol" class="form-label fw-semibold">
+                                    <i class="bi bi-droplet me-2"></i><span data-i18n-text-zh="血清胆固醇" data-i18n-text-en="Serum Cholesterol">血清胆固醇</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" name="chol" min="1" max="2000" id="chol" class="form-control" placeholder="200" required>
+                                    <span class="input-group-text bg-light">mg/dl</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="fbs" class="form-label fw-semibold">
+                                    <i class="bi bi-cup-hot me-2"></i><span data-i18n-text-zh="空腹血糖" data-i18n-text-en="Fasting Blood Sugar">空腹血糖</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" name="fbs" min="1" max="2300" id="fbs" class="form-control" placeholder="100" required>
+                                    <span class="input-group-text bg-light">mg/dl</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="thalach" class="form-label fw-semibold">
+                                    <i class="bi bi-heart-fill me-2"></i><span data-i18n-text-zh="最大心率" data-i18n-text-en="Max Heart Rate">最大心率</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" name="thalach" min="1" max="600" id="thalach" class="form-control" placeholder="150" required>
+                                    <span class="input-group-text bg-light" data-i18n-text-zh="次/分" data-i18n-text-en="bpm">次/分</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="oldpeak" class="form-label fw-semibold">
+                                    <i class="bi bi-graph-down me-2"></i><span data-i18n-text-zh="ST段压低 (相对于静息状态)" data-i18n-text-en="ST Depression (vs Rest)">ST段压低 (相对于静息状态)</span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" name="oldpeak" min="0" max="10" step="0.1" id="oldpeak" class="form-control" placeholder="1.0" required>
+                                    <span class="input-group-text bg-light">mm</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 模型选择部分 -->
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-cpu me-2"></i><span data-i18n-text-zh="AI模型选择" data-i18n-text-en="AI Model Selection">AI模型选择</span>
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="model_selection" class="form-label fw-semibold">
+                                    <i class="bi bi-gear-fill me-2"></i><span data-i18n-text-zh="选择预测模型" data-i18n-text-en="Select Model">选择预测模型</span>
+                                </label>
+                                <select name="model_selection" id="model_selection" class="form-select">
+                                    <option value="lr" data-i18n-text-zh="逻辑回归 (Logistic Regression 1.0)" data-i18n-text-en="Logistic Regression 1.0">逻辑回归 (Logistic Regression 1.0)</option>  
+                                    <option value="p" data-i18n-text-zh="感知机 (Perceptron 1.0)" data-i18n-text-en="Perceptron 1.0">感知机 (Perceptron 1.0)</option>
+                    </select>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    <span data-i18n-text-zh="逻辑回归提供预测概率；感知机仅提供分类结果。" data-i18n-text-en="Logistic regression provides a probability; Perceptron provides a classification.">逻辑回归提供预测概率；感知机仅提供分类结果。</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提交按钮 -->
+                    <div class="d-grid">
+                        <button type="submit" name="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-cpu me-2"></i><span data-i18n-text-zh="开始AI心脏病风险评估" data-i18n-text-en="Start AI Heart Risk Assessment">开始AI心脏病风险评估</span>
+                        </button>
+                    </div>
+                </form></div></section><aside class="panel heart-guidance"><span class="feature-icon peach">{{ icon('heart-pulse') }}</span><h3>{{ t('准备好您的检查信息','Have your information ready') }}</h3><p>{{ t('评估需要基本信息、症状描述，以及血压、血糖、胆固醇等生理指标。','The assessment uses personal information, symptoms, and indicators such as blood pressure, blood sugar and cholesterol.') }}</p><div class="guidance-divider"><strong>{{ t('关于评估模型','About the models') }}</strong><p>{{ t('逻辑回归输出分类及预测概率；感知机输出分类结果。您可以在表单底部选择。','Logistic regression returns a class and probability. Perceptron returns a class. Choose a model at the end of the form.') }}</p></div><div class="guidance-divider"><strong>{{ t('信息填写提示','Entering information') }}</strong><p>{{ t('输入框中的示例仅说明格式，请填写您实际的检查数值。','Placeholders are format examples. Enter your actual examination values.') }}</p></div></aside></div>
+{% endblock %}
+{% block extra_js %}<script>
+const modelSelect=document.getElementById('model_selection');
+function updateModelHelp(){const isZh=document.documentElement.dataset.lang!=='en';const help=modelSelect.parentNode.querySelector('.form-text');help.textContent=modelSelect.value==='lr'?(isZh?'逻辑回归：提供分类结果与模型预测概率。':'Logistic regression: returns a classification and predicted probability.'):(isZh?'感知机：仅提供分类结果，不提供概率。':'Perceptron: returns a classification without a probability.');}
+modelSelect.addEventListener('change',updateModelHelp);document.addEventListener('langchange',updateModelHelp);updateModelHelp();
+</script>{% endblock %}

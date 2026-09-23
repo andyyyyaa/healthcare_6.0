@@ -1,0 +1,5 @@
+{% macro t(zh, en) -%}<span class="lang-zh">{{ zh }}</span><span class="lang-en">{{ en }}</span>{%- endmacro %}
+{% macro icon(name) -%}<i class="bi bi-{{ name }}" aria-hidden="true"></i>{%- endmacro %}
+{% macro nav(endpoint, zh, en, symbol, active) -%}
+<a href="{{ url_for(endpoint) }}" class="nav-link{% if request.endpoint in active %} active{% endif %}"{% if request.endpoint in active %} aria-current="page"{% endif %}>{{ icon(symbol) }}{{ t(zh,en) }}{% if request.endpoint in active %}<span class="nav-dot"></span>{% endif %}</a>
+{%- endmacro %}
